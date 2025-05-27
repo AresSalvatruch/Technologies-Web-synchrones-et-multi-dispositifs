@@ -1,0 +1,9 @@
+nvm install lts
+nvm use lts
+npm install express
+yarn init -y
+yarn add express
+yarn add -D typescript ts-node @types/node @types/express
+yarn add typescript ts-node express 
+npm i -g tsc
+tsc --init
