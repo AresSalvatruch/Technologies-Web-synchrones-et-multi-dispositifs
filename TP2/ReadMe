@@ -1,0 +1,142 @@
+**TP2 - Application Interactive de Gestion d’Événements**
+
+## Présentation du Projet
+
+Ce projet est une application interactive de gestion d’événements (similaire à un système de type Slido) qui permet aux participants et aux animateurs d’interagir en temps réel. Les participants peuvent soumettre des questions, voter ("j’aimerais") pour des questions, et naviguer entre différentes vues d’événement à l’aide d’une reconnaissance gestuelle personnalisée. L’application est conçue en full-stack :
+
+* **Frontend** : React avec Vite et Tailwind CSS
+* **Gestion d’État** : Redux Toolkit (avec un middleware pour gérer les événements Socket.io)
+* **Communication Temps Réel** : Socket.io côté client et côté serveur
+* **Backend** : Node.js avec Express (TypeScript) et Socket.io
+
+## Fonctionnalités
+
+* Soumission de questions et votes en temps réel
+* Navigation gestuelle entre vues (`localhost:PORT/.)
+* Attribution automatique d’identifiants utilisateur côté serveur
+* Synchronisation sur plusieurs dispositifs
+* Structure de code organisée avec des dossiers distincts pour le frontend et le backend
+
+## Structure du Répertoire
+
+```plaintext
+TP2/
+├── backend/                # Serveur Express + TypeScript + Socket.io
+│   ├── package.json        # Dépendances et scripts du backend
+│   ├── tsconfig.json       # Configuration TypeScript
+│   ├── src/
+│   │   ├── index.ts        # Point d’entrée
+│   │   ├── routes/         # Gestionnaires des routes Express
+│   │   ├── sockets/        # Définitions des événements Socket.io
+├── frontend/               # Client React + Vite + Tailwind CSS
+│   ├── package.json        # Dépendances et scripts du frontend
+│   ├── vite.config.ts      # Configuration Vite
+│   ├── tailwind.config.js  # Configuration Tailwind CSS
+│   ├── postcss.config.js   # Configuration PostCSS
+│   ├── src/
+│   │   ├── main.tsx        # Point d’entrée React
+│   │   ├── App.tsx         # Composant principal
+│   │   ├── pages/          # Différentes vues (ex. ParticipantView, PresenterView)
+│   │   ├── components/     # Composants UI réutilisables (ex. QuestionList, QuestionForm)
+│   │   ├── store/          # Configuration du store Redux Toolkit et du middleware
+│   │   ├── hooks/          # Hooks personnalisés (ex. useSocket)
+│   │   └── styles/         # Styles globaux et utilitaires
+│   └── public/             # Ressources statiques (ex. index.html)
+├── README.md               # <-- (Ce fichier) Documentation du projet
+└── .gitignore              # Fichiers/dossiers ignorés par Git
+```
+
+### Dépendances Backend
+
+* **express** – Framework web pour Node.js
+* **socket.io** – Communication bidirectionnelle en temps réel
+* **cors** – Middleware de partage de ressources cross-origin
+* **dotenv** – Chargement des variables d’environnement depuis un fichier `.env`
+* **typescript** – Surensemble typé de JavaScript
+* **ts-node-dev** – Exécution directe de TypeScript avec redémarrage automatique à chaque changement
+* **@types/express**, **@types/node**, **@types/socket.io** – Déclarations de types pour TypeScript
+
+### Dépendances Frontend
+
+* **react**, **react-dom** – Bibliothèques React de base
+* **vite** – Outil de build et serveur de développement pour le frontend
+* **tailwindcss**, **postcss**, **autoprefixer** – Framework utilitaire CSS et outils associés
+* **@reduxjs/toolkit**, **react-redux** – Redux Toolkit et liaisons React
+* **socket.io-client** – Client Socket.io pour communication en temps réel
+* **react-router-dom** (si utilisé) – Routage côté frontend
+* **typescript** – Surensemble typé de JavaScript (requis par Vite)
+* **@types/react**, **@types/react-dom**, **@types/react-router-dom** – Déclarations de types pour TypeScript
+
+## Installation
+
+1. **Cloner le Dépôt**
+
+   #git clone https://github.com/AresSalvatruch/Technologies-Web-synchrones-et-multi-dispositifs.git
+   cd Technologies-Web-synchrones-et-multi-dispositifs/TP2
+   ```
+
+2. **Installer les Dépendances du Backend**
+
+   cd /serveur
+   npm install
+
+3. **Installer les Dépendances du Frontend**
+
+   cd /client
+   npm install
+   yarn add react-redux
+   npm install react-redux  
+   npm install @reduxjs/toolkit
+
+
+## Lancement de l’Application
+
+1. **Démarrer le Serveur Backend**
+   Depuis le dossier `backend`, lancez :
+
+   npm start
+  
+2. **Démarrer le Serveur Frontend**
+   Depuis le dossier `frontend`, lancez :
+
+  Yarn Dev
+
+
+## Explication du Projet
+
+1. **Reconnaissance Gestuelle**
+
+   * Un reconnaisseur gestuel personnalisé (basé sur des classes `Point` et `Gesture`) permet aux utilisateurs de naviguer entre les vues d’événement en effectuant des glissements (swipes) vers la gauche ou vers la droite sur les dispositifs compatibles.
+   * Cette logique se trouve dans `backend/src/utils/gestureRecognizer.ts` (ou un fichier au nom similaire). Sur le frontend, les événements de glissement sont capturés (via un hook React) et envoyés au backend si besoin.
+Le swipe vers la droite permet d'aller au event suivant ( nb il exist que 3 event )
+
+2. **Questions en Temps Réel & Votes**
+
+   * Les participants peuvent envoyer des questions via un formulaire (composant `QuestionForm`). Lors de la soumission, la question est émise au serveur via Socket.io.
+   * Le serveur écoute les nouvelles questions, leur attribue un identifiant unique (et éventuellement un identifiant utilisateur), puis diffuse la liste mise à jour à tous les clients connectés.
+   * Les votes ("j’aime") sont gérés de la même manière : lorsqu’un participant clique sur "j’aime", le client envoie un événement avec l’ID de la question. Le serveur incrémente le nombre de votes et diffuse l’état mis à jour.
+   * Le store Redux Toolkit (avec middleware personnalisé) gère les événements Socket.io entrants (`NEW_QUESTION`, `UPDATE_QUESTION_LIKES`, etc.) et met à jour automatiquement l’UI.
+
+3. **Structure des Routes & Vues**
+
+   * L’application utilise React Router (si configuré) pour gérer plusieurs routes :
+
+     * `/event/:eventId/participant` : Vue participant pour soumettre et voter sur des questions.
+     * `/event/:eventId/admin` : Vue admin pour surveiller les questions entrantes et sélectionner celles à afficher.
+   * Chaque vue rend des composants différents mais écoute la même namespace/room Socket.io pour les mises à jour en temps réel.
+
+4. **API Backend & Sockets**
+
+   * Le serveur Express fournit des endpoints REST (si nécessaires) dans `src/routes/` (par exemple, pour récupérer d’anciennes questions ou authentifier un animateur).
+   * La logique Socket.io dans `src/sockets/` définit les gestionnaires d’événements pour :
+
+     * `connection` : Gérer un nouveau client, notamment en rejoignant une room d’événement spécifique.
+     * `submit_question` : Recevoir une nouvelle question (texte + métadonnées éventuelles).
+     * `like_question` : Recevoir un événement de vote avec l’`questionId`.
+     * `disconnect` : Nettoyage lorsqu’un client se déconnecte.
+
+5. **Gestion d’État**
+
+   * Le store Redux du frontend (dans `frontend/src/store`) utilise des slices (par exemple, `questionsSlice`) pour gérer la liste des questions, les compteurs de votes, et les états de chargement.
+   * Un middleware Redux personnalisé (`socketMiddleware`) intercepte certaines actions dispatchées (par exemple, `SEND_QUESTION`, `SEND_LIKE`) et les envoie au client Socket.io.
+   * Lorsque le client Socket.io reçoit des événements du serveur, il dispatch les actions Redux correspondantes pour mettre à jour l’UI.
