@@ -52,6 +52,19 @@ const handleGesture = (gesture: string) => {
       <h1 className="text-3xl font-bold text-blue-700 mb-2">
         🎤 Pose ta question pour : {event.name}
       </h1>
+    <button
+  onClick={() => navigate(`/admin/${eventId}`)}
+>
+  Admin
+</button>
+
+<button
+          onClick={() => navigate('/home')}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+        >
+          🗂️ Home
+        </button>
+
       <p className="text-gray-600 mb-6">📅 Date : {event.date}</p>
 
       <QuestionForm eventId={eventId} />

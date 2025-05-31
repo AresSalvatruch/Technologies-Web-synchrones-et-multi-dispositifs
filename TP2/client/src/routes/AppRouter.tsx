@@ -12,11 +12,14 @@ export default function AppRouter() {
         <Route path="/" element={<HomePage />} />
 
         <Route path="/event/:eventId/participant" element={<ParticipantView />} />
+        <Route path="/ParticipantView" element={<ParticipantView />} />
 
         <Route path="/event/:eventId/admin" element={<AdminView />} />
-
+        <Route path="/admin/:eventId" element={<AdminView />} />
+        <Route path="/participant/:eventId" element={<ParticipantView />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
+

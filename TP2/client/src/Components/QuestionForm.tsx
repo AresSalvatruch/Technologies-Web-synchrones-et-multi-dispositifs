@@ -4,6 +4,7 @@ import { addQuestion } from '../store/questionsSlice';
 import { v4 as uuidv4 } from 'uuid';
 import { Question } from '../types';
 import Gest from './Gest'; // Assure-toi que ce composant est bien importé
+import { username } from '../socket';
 interface Props {
   eventId: string;
 }
@@ -20,8 +21,7 @@ export default function QuestionForm({ eventId }: Props) {
       id: uuidv4(),
       eventId,
       content,
-      author: "user", // Remplace par l'utilisateur actuel si tu as un système d'authentification
-      likes: 0,
+      author: username ?? "Anonyme",      likes: 0,
       socketId: "",
       isAnswered: false,
     };
